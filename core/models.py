@@ -3,6 +3,15 @@ from django.db import models
 # Create your models here.
 
 
+class MovieManager(models.Manager):
+    def all_with_prefetch_persons(self):
+        qs = self.get_queryset()
+        qs = qs.select_related('director')
+        qs = qs.prefetch_related('writers', 'actors')
+
+        return qs
+
+
 class Movie(models.Model):
     NOT_RATED = 0
     RATED_G = 1
@@ -29,7 +38,9 @@ class Movie(models.Model):
     actors = models.ManyToManyField(
         to='Person', through='Role', related_name='acting_credits', blank=True)
 
+    objects = MovieManager()
     # descending order in year, its like ORDER BY year DESC, title
+
     class Meta:
         ordering = ('-year', 'title')
 
@@ -43,10 +54,22 @@ class Role(models.Model):
     name = models.CharField(max_length=140)
 
     def __str__(self):
-        return f'{self.movie_id} {self.person_id} {self.name}'
+        return f'{self.movie_id} - {self.person_id} ({self.name})'
 
     class Meta:
         unique_together = ('movie', 'person', 'name')
+
+
+class PersonManager(models.Manager):
+    """ Custom Manager. Using prefetch_related() method, django will query all related data accross a single relationship ina a single addtional query. we're telling dajango to prefetch all the movies that a person has directed, written and had a role in as well as prefetch the role themselves. """
+
+    def all_with_prefetch_movies(self):
+        qs = self.get_queryset()
+        return qs.prefetch_related(
+            'directed',
+            'writing_credits',
+            'role_set__movie'
+        )
 
 
 class Person(models.Model):
@@ -55,6 +78,8 @@ class Person(models.Model):
     born = models.DateField()
     died = models.DateField(null=True, blank=True)
 
+    objects = PersonManager()
+
     class Meta:
         ordering = (
             'last_name', 'first_name'
@@ -62,5 +87,5 @@ class Person(models.Model):
 
     def __str__(self):
         if self.died:
-            return f'{self.last_name}, {self.first_name} ({self.born}-{self.died})'
+            return f'{self.last_name}, {self.first_name} ({self.born} to {self.died})'
         return f'{self.last_name}, {self.first_name} ({self.born})'

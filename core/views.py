@@ -5,7 +5,7 @@ from django.views.generic import (
 from django.shortcuts import render
 
 
-from core.models import Movie
+from core.models import Movie, Person
 
 # Create your views here.
 
@@ -16,5 +16,9 @@ class MovieList(ListView):
 
 
 class MovieDetail(DetailView):
-    model = Movie
+    queryset = Movie.objects.all_with_prefetch_persons()
     context_object_name = 'movie'
+
+
+class PersonDetail(DetailView):
+    queryset = Person.objects.all_with_prefetch_movies()
