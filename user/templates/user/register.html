@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block main %}
+  <h1>Register for IMDB</h1>
+  <form method="post">
+    {{ form.as_p }}
+    {% csrf_token %}
+    <button class="btn btn-primary" type="submit">
+      Register
+    </button>
+  </form>
+{% endblock main %}
