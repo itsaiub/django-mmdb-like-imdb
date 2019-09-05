@@ -9,6 +9,7 @@ from django.core.exceptions import PermissionDenied
 
 from core.models import Movie, Person, Vote
 from core.forms import VoteForm, MovieImageForm
+from core.mixins import CachePageVaryOnCookieMixin
 
 # Create your views here.
 
@@ -18,7 +19,7 @@ class TopMovies(ListView):
     queryset = Movie.objects.top_movies(limit=10)
 
 
-class MovieList(ListView):
+class MovieList(CachePageVaryOnCookieMixin, ListView):
     model = Movie
     paginate_by = 10
     context_object_name = 'movies'

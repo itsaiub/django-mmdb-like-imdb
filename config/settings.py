@@ -102,6 +102,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# for cache a page
+
 CASHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
@@ -110,6 +112,7 @@ CASHES = {
     }
 }
 
+CSRF_USE_SESSIONS = True
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
