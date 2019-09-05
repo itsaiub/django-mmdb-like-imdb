@@ -13,6 +13,11 @@ from core.forms import VoteForm, MovieImageForm
 # Create your views here.
 
 
+class TopMovies(ListView):
+    template_name = 'core/top_movies_list.html'
+    queryset = Movie.objects.top_movies(limit=10)
+
+
 class MovieList(ListView):
     model = Movie
     paginate_by = 10
